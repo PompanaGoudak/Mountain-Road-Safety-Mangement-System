@@ -1,0 +1,135 @@
+
+#include <LiquidCrystal.h>
+
+// LCD connections: RS, EN, D4, D5, D6, D7
+LiquidCrystal lcd(8, 9, 10, 11, 12, 13);
+
+// Side A LEDs
+int redA = 2;
+int yellowA = 3;
+int greenA = 4;
+
+// Side B LEDs
+int redB = 5;
+int yellowB = 6;
+int greenB = 7;
+
+// Sensors simulated using pushbuttons
+int buttonA = A0;
+int buttonB = A1;
+
+// Buzzer
+int buzzer = A2;
+
+void setup()
+{
+  // LED pins
+  pinMode(redA, OUTPUT);
+  pinMode(yellowA, OUTPUT);
+  pinMode(greenA, OUTPUT);
+
+  pinMode(redB, OUTPUT);
+  pinMode(yellowB, OUTPUT);
+  pinMode(greenB, OUTPUT);
+
+  // Pushbuttons
+  pinMode(buttonA, INPUT_PULLUP);
+  pinMode(buttonB, INPUT_PULLUP);
+
+  // Buzzer
+  pinMode(buzzer, OUTPUT);
+
+  // LCD
+  lcd.begin(16, 2);
+
+  lcd.print("ROAD SAFETY");
+  lcd.setCursor(0, 1);
+  lcd.print("SYSTEM READY");
+
+  delay(2000);
+  lcd.clear();
+}
+
+void loop()
+{
+  int A = digitalRead(buttonA);
+  int B = digitalRead(buttonB);
+
+  // No vehicles
+  if (A == HIGH && B == HIGH)
+  {
+    digitalWrite(greenA, HIGH);
+    digitalWrite(redA, LOW);
+    digitalWrite(yellowA, LOW);
+
+    digitalWrite(greenB, HIGH);
+    digitalWrite(redB, LOW);
+    digitalWrite(yellowB, LOW);
+
+    digitalWrite(buzzer, LOW);
+
+    lcd.clear();
+    lcd.print("EMPTY ROAD");
+    lcd.setCursor(0, 1);
+    lcd.print("A:1 B:1");
+  }
+
+  // Vehicle from Side A
+  else if (A == LOW && B == HIGH)
+  {
+    digitalWrite(greenA, LOW);
+    digitalWrite(yellowA, LOW);
+    digitalWrite(redA, HIGH);
+
+    digitalWrite(greenB, HIGH);
+    digitalWrite(yellowB, LOW);
+    digitalWrite(redB, LOW);
+
+    digitalWrite(buzzer, LOW);
+
+    lcd.clear();
+    lcd.print("VEHICLE SIDE A");
+    lcd.setCursor(0, 1);
+    lcd.print("A:0 B:1");
+  }
+
+  // Vehicle from Side B
+  else if (A == HIGH && B == LOW)
+  {
+    digitalWrite(greenA, HIGH);
+    digitalWrite(yellowA, LOW);
+    digitalWrite(redA, LOW);
+
+    digitalWrite(greenB, LOW);
+    digitalWrite(yellowB, LOW);
+    digitalWrite(redB, HIGH);
+
+    digitalWrite(buzzer, LOW);
+
+    lcd.clear();
+    lcd.print("VEHICLE SIDE B");
+    lcd.setCursor(0, 1);
+    lcd.print("A:1 B:0");
+  }
+
+  // Vehicles from both sides
+  else
+  {
+    digitalWrite(greenA, LOW);
+    digitalWrite(yellowA, LOW);
+    digitalWrite(redA, HIGH);
+
+    digitalWrite(greenB, LOW);
+    digitalWrite(yellowB, LOW);
+    digitalWrite(redB, HIGH);
+
+    digitalWrite(buzzer, HIGH);
+
+    lcd.clear();
+    lcd.print("STOP BOTH SIDES");
+    lcd.setCursor(0, 1);
+    lcd.print("DANGER ALERT!");
+  }
+
+  delay(200);
+}
